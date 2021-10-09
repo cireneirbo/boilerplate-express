@@ -1,5 +1,7 @@
+const bodyParser = require('body-parser');
 var express = require('express');
 var app = express();
+var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 // log info on user
 app.use((req, res, next) => {
@@ -9,6 +11,9 @@ app.use((req, res, next) => {
 
 // attach css
 app.use('/public', express.static(__dirname + "/public"));
+
+// instantiate body parser
+app.use(urlencodedParser);
 
 // '/' route - returns an html page
 app.get('/', ( req, res, next) => {
@@ -45,9 +50,15 @@ app.get('/:word/echo', (req, res) => {
   res.json({echo: req.params.word});
 })
 
-
-
-
-
+// '/name' route - parses query string for data
+app.route('/name').get((req, res) => {
+  res.json({
+    name: req.query.first + ' ' + req.query.last
+    })
+}).post(urlencodedParser, (req, res) => {
+  res.json({
+    name: req.body.first + ' ' + req.body.last
+    })
+});
 
  module.exports = app;
